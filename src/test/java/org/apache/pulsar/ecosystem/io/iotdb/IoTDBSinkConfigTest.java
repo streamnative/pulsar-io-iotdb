@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.pulsar.ecosystem.io.random;
+package org.apache.pulsar.ecosystem.io.iotdb;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -30,9 +30,9 @@ import java.util.Map;
 import org.junit.Test;
 
 /**
- * Unit test {@link RandomConnectorConfig}.
+ * Unit test {@link IoTDBSinkConfig}.
  */
-public class RandomConnectorConfigTest {
+public class IoTDBSinkConfigTest {
 
     /**
      * Test Case: load the configuration from an empty property map.
@@ -42,9 +42,9 @@ public class RandomConnectorConfigTest {
     @Test
     public void testLoadEmptyPropertyMap() throws IOException {
         Map<String, Object> emptyMap = Collections.emptyMap();
-        RandomConnectorConfig config = RandomConnectorConfig.load(emptyMap);
-        assertNull("RandomSeed should not be set", config.getRandomSeed());
-        assertNull("MaxMessageSize should not be set", config.getRandomSeed());
+        IoTDBSinkConfig config = IoTDBSinkConfig.load(emptyMap);
+        assertNull("Host should not be set", config.getHost());
+        assertNull("Port should not be set", config.getPort());
     }
 
     /**
@@ -56,33 +56,11 @@ public class RandomConnectorConfigTest {
     public void testLoadPropertyMap() throws IOException {
         Map<String, Object> properties = new HashMap<>();
         long seed = System.currentTimeMillis();
-        properties.put("randomSeed", seed);
-        properties.put("maxMessageSize", 2048);
+        properties.put("batchSize", 2048);
 
-        RandomConnectorConfig config = RandomConnectorConfig.load(properties);
-        assertEquals("Mismatched random seed : " + config.getRandomSeed(),
-            seed, config.getRandomSeed().longValue());
-        assertEquals("Mismatched MaxMessageSize : " + config.getMaxMessageSize(),
-            2048, config.getMaxMessageSize().intValue());
-    }
-
-    /**
-     * Test Case: load the configuration from a string property map.
-     *
-     * @throws IOException when failed to load the property map
-     */
-    @Test
-    public void testLoadStringPropertyMap() throws IOException {
-        Map<String, Object> properties = new HashMap<>();
-        long seed = System.currentTimeMillis();
-        properties.put("randomSeed", "" + seed);
-        properties.put("maxMessageSize", "2048");
-
-        RandomConnectorConfig config = RandomConnectorConfig.load(properties);
-        assertEquals("Mismatched random seed : " + config.getRandomSeed(),
-            seed, config.getRandomSeed().longValue());
-        assertEquals("Mismatched MaxMessageSize : " + config.getMaxMessageSize(),
-            2048, config.getMaxMessageSize().intValue());
+        IoTDBSinkConfig config = IoTDBSinkConfig.load(properties);
+        assertEquals("Mismatched MaxMessageSize : " + config.getBatchSize(),
+            2048, config.getBatchSize().intValue());
     }
 
     /**
@@ -93,10 +71,10 @@ public class RandomConnectorConfigTest {
     @Test(expected = JsonProcessingException.class)
     public void testLoadInvalidPropertyMap() throws IOException {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("randomSeed", "invalid-seed");
-        properties.put("maxMessageSize", "invalid-max-message-size");
+        properties.put("port", "abcd");
+        properties.put("batchSize", -200);
 
-        RandomConnectorConfig.load(properties);
+        IoTDBSinkConfig.load(properties);
     }
 
     /**
@@ -105,9 +83,9 @@ public class RandomConnectorConfigTest {
     @Test
     public void testValidConfiguration() throws IOException {
         Map<String, Object> emptyMap = Collections.emptyMap();
-        RandomConnectorConfig config = RandomConnectorConfig.load(emptyMap);
-        assertNull("RandomSeed should not be set", config.getRandomSeed());
-        assertNull("MaxMessageSize should not be set", config.getRandomSeed());
+        IoTDBSinkConfig config = IoTDBSinkConfig.load(emptyMap);
+        assertNull("host should not be set", config.getHost());
+        assertNull("port should not be set", config.getPort());
         try {
             config.validate();
             fail("Should fail if `maxMessageSize is not provided");

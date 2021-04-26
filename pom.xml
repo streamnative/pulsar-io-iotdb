@@ -31,10 +31,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.apache.pulsar.ecosystem</groupId>
-  <artifactId>pulsar-io-template</artifactId>
-  <version>0.0.1</version>
-  <name>Pulsar Ecosystem :: IO Connector :: Template Project</name>
-  <description>It is a project template for developing an Apache Pulsar connector</description>
+  <artifactId>pulsar-io-iotdb</artifactId>
+  <version>${pulsar.version}</version>
+  <name>Pulsar Ecosystem :: IO Connector :: IoTDB</name>
+  <description>Pulsar integration for Apache IoTDB</description>
 
   <properties>
     <java.version>1.8</java.version>
@@ -48,7 +48,7 @@
     <jackson.version>2.9.7</jackson.version>
     <lombok.version>1.16.22</lombok.version>
     <pulsar.version>2.2.0</pulsar.version>
-
+    <iotdb.version>0.12.0</iotdb.version>
     <!-- test dependencies -->
     <junit.version>4.12</junit.version>
     <mockito.version>2.22.0</mockito.version>
@@ -85,6 +85,11 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.iotdb</groupId>
+        <artifactId>iotdb-session</artifactId>
+        <version>${iotdb.version}</version>
       </dependency>
       <dependency>
         <groupId>org.projectlombok</groupId>
@@ -133,6 +138,11 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.iotdb</groupId>
+      <artifactId>iotdb-session</artifactId>
+      <version>${iotdb.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.spotbugs</groupId>
