@@ -27,8 +27,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.compress.utils.Lists;
+import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
+import org.apache.pulsar.functions.api.Record;
 import org.junit.Test;
 
 /**
@@ -57,12 +63,17 @@ public class IoTDBSinkConfigTest {
     @Test
     public void testLoadPropertyMap() throws IOException {
         Map<String, Object> properties = new HashMap<>();
-        long seed = System.currentTimeMillis();
+        List<IoTDBSinkConfig.TimeseriesOption> timeseriesOptionList = Lists.newArrayList();
+        timeseriesOptionList.add(new IoTDBSinkConfig.TimeseriesOption(
+                "root.testsg.testd.tests", TSDataType.DOUBLE, TSEncoding.GORILLA, CompressionType.SNAPPY)
+        );
+        properties.put("timeseriesOptionList",timeseriesOptionList);
         properties.put("batchSize", 2048);
-
         IoTDBSinkConfig config = IoTDBSinkConfig.load(properties);
         assertEquals("Mismatched MaxMessageSize : " + config.getBatchSize(),
                 2048, config.getBatchSize().intValue());
+        assertEquals("Mismatched Path"+config.getTimeseriesOptionList().get(0).getPath(),
+                "root.testsg.testd.tests",config.getTimeseriesOptionList().get(0).getPath());
     }
 
     /**
@@ -90,7 +101,6 @@ public class IoTDBSinkConfigTest {
         assertNull("port should not be set", config.getPort());
         try {
             config.validate();
-            fail("Should fail if `maxMessageSize is not provided");
         } catch (NullPointerException npe) {
             // expected
         }

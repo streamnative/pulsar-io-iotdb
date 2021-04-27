@@ -20,10 +20,16 @@ package org.apache.pulsar.ecosystem.io.iotdb;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -43,7 +49,7 @@ public class IoTDBSinkConfig implements Serializable {
     private String password;
     private String storageGroup;
     private Integer batchSize;
-
+    private List<TimeseriesOption> timeseriesOptionList;
     /**
      * Validate if the configuration is valid.
      */
@@ -61,6 +67,24 @@ public class IoTDBSinkConfig implements Serializable {
     public static IoTDBSinkConfig load(Map<String, Object> map) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(new ObjectMapper().writeValueAsString(map), IoTDBSinkConfig.class);
+    }
+    @Data
+    public static class TimeseriesOption implements Serializable{
+        private  String path;
+        private TSDataType dataType = TSDataType.TEXT;
+        private TSEncoding encoding = TSEncoding.PLAIN;
+        private CompressionType compressor = CompressionType.SNAPPY;
+
+        public TimeseriesOption(String path){
+            this.path = path;
+        }
+        public TimeseriesOption(String path, TSDataType dataType,TSEncoding encoding, CompressionType compressor){
+            this.path = path;
+            this.dataType = dataType;
+            this.encoding = encoding;
+            this.compressor = compressor;
+        }
+
     }
 
 }
