@@ -1,6 +1,6 @@
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
+ * or more contrexbutor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
@@ -17,26 +17,3 @@
  * under the License.
  */
 package org.apache.pulsar.ecosystem.io.iotdb;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
-import java.io.Serializable;
-
-/**
- * Configuration class for IoTDB connector.
- */
-@Data
-@ToString
-@EqualsAndHashCode
-@Accessors(chain = true)
-public class IoTDBConfig{
-    private static final long serialVersionUID = 1L;
-
-    private String host;
-    private Integer port;
-    private String user;
-    private String password;
-}

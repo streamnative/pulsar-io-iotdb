@@ -18,36 +18,49 @@
  */
 package org.apache.pulsar.ecosystem.io.iotdb;
 
-import avro.shaded.com.google.common.base.Preconditions;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
-public class IoTDBSinkConfig extends IoTDBConfig implements Serializable {
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+import avro.shaded.com.google.common.base.Preconditions;
+
+/**
+ * Configuration class for IoTDBSink connector.
+ */
+
+@Getter
+@EqualsAndHashCode()
+public class IoTDBSinkConfig implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String host;
+    private Integer port;
+    private String user;
+    private String password;
     private String storageGroup;
     private Integer batchSize;
+
     /**
-     * Validate if the configuration is valid
+     * Validate if the configuration is valid.
      */
-    public void validate(){
+
+    public void validate() {
         Preconditions.checkNotNull(getHost(), "host property not set.");
-        Preconditions.checkNotNull(getPort(),"port property not set.");
-        Preconditions.checkNotNull(getUser(),"user property not set.");
-        Preconditions.checkNotNull(getPassword(),"password property not set");
+        Preconditions.checkNotNull(getPort(), "port property not set.");
+        Preconditions.checkNotNull(getUser(), "user property not set.");
+        Preconditions.checkNotNull(getPassword(), "password property not set");
         Preconditions.checkNotNull(getStorageGroup(), "storageGroup property not set.");
         Preconditions.checkNotNull(getBatchSize(), "batchSize property not set.");
-        Preconditions.checkState(getBatchSize()>0,"batchSize property should be positive.");
+        Preconditions.checkState(getBatchSize() > 0, "batchSize property should be positive.");
     }
 
-    public static IoTDBSinkConfig load(Map<String, Object> map)throws IOException{
+    public static IoTDBSinkConfig load(Map<String, Object> map) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(new ObjectMapper().writeValueAsString(map),IoTDBSinkConfig.class);
+        return mapper.readValue(new ObjectMapper().writeValueAsString(map), IoTDBSinkConfig.class);
     }
+
 }

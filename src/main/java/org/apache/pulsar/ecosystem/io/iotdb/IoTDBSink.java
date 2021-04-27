@@ -22,6 +22,7 @@ import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+
 import org.apache.iotdb.session.pool.SessionPool;
 
 import org.apache.pulsar.functions.api.Record;
@@ -29,10 +30,10 @@ import org.apache.pulsar.io.core.Sink;
 import org.apache.pulsar.io.core.SinkContext;
 
 /**
- * Pulsar sink for Apache IoTDB
+ * Pulsar sink for Apache IoTDB.
  */
 @Getter(AccessLevel.PACKAGE)
-public class IoTDBSink implements Sink<byte[]>{
+public class IoTDBSink implements Sink<byte[]> {
     @Override
     public void open(Map map, SinkContext sinkContext) throws Exception {
 
