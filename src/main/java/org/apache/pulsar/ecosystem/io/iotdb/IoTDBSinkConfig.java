@@ -1,14 +1,14 @@
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contrexbutor license agreements.  See the NOTICE file
+ * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,6 +18,7 @@
  */
 package org.apache.pulsar.ecosystem.io.iotdb;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -33,7 +34,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import avro.shaded.com.google.common.base.Preconditions;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.base.Preconditions;
 
 /**
  * Configuration class for IoTDBSink connector.
@@ -48,8 +50,11 @@ public class IoTDBSinkConfig implements Serializable {
     private String user;
     private String password;
     private String storageGroup;
-    private Integer batchSize;
+    private Integer batchSize = 100;
+    private Integer flushIntervalMs = 3000;
+    private Integer sessionPoolSize = 2;
     private List<TimeseriesOption> timeseriesOptionList;
+
     /**
      * Validate if the configuration is valid.
      */
@@ -68,17 +73,27 @@ public class IoTDBSinkConfig implements Serializable {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(new ObjectMapper().writeValueAsString(map), IoTDBSinkConfig.class);
     }
+
+    public static IoTDBSinkConfig load(String yamlFile) throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        return mapper.readValue(new File(yamlFile), IoTDBSinkConfig.class);
+    }
+
+    /**
+     * Class for TimeseriesOptions, which are used to check or create column.
+     */
     @Data
-    public static class TimeseriesOption implements Serializable{
-        private  String path;
+    public static class TimeseriesOption implements Serializable {
+        private String path;
         private TSDataType dataType = TSDataType.TEXT;
         private TSEncoding encoding = TSEncoding.PLAIN;
         private CompressionType compressor = CompressionType.SNAPPY;
 
-        public TimeseriesOption(String path){
+        public TimeseriesOption(String path) {
             this.path = path;
         }
-        public TimeseriesOption(String path, TSDataType dataType,TSEncoding encoding, CompressionType compressor){
+
+        public TimeseriesOption(String path, TSDataType dataType, TSEncoding encoding, CompressionType compressor) {
             this.path = path;
             this.dataType = dataType;
             this.encoding = encoding;

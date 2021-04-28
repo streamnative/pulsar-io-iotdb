@@ -82,6 +82,11 @@
         <version>${pulsar.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.pulsar</groupId>
+        <artifactId>pulsar-common</artifactId>
+        <version>${pulsar.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${jackson.version}</version>
@@ -143,6 +148,21 @@
       <groupId>org.apache.iotdb</groupId>
       <artifactId>iotdb-session</artifactId>
       <version>${iotdb.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pulsar</groupId>
+      <artifactId>pulsar-common</artifactId>
+      <version>${pulsar.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pulsar</groupId>
+      <artifactId>pulsar-client</artifactId>
+      <version>${pulsar.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pulsar</groupId>
+      <artifactId>pulsar-functions-instance</artifactId>
+      <version>${pulsar.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.spotbugs</groupId>
