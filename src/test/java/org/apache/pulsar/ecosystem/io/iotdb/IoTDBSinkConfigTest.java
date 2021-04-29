@@ -16,23 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.pulsar.ecosystem.io.random;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+package org.apache.pulsar.ecosystem.io.iotdb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.compress.utils.Lists;
+import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 /**
- * Unit test {@link RandomConnectorConfig}.
+ * Unit test {@link IoTDBSinkConfig}.
  */
-public class RandomConnectorConfigTest {
+public class IoTDBSinkConfigTest {
 
     /**
      * Test Case: load the configuration from an empty property map.
@@ -42,9 +49,9 @@ public class RandomConnectorConfigTest {
     @Test
     public void testLoadEmptyPropertyMap() throws IOException {
         Map<String, Object> emptyMap = Collections.emptyMap();
-        RandomConnectorConfig config = RandomConnectorConfig.load(emptyMap);
-        assertNull("RandomSeed should not be set", config.getRandomSeed());
-        assertNull("MaxMessageSize should not be set", config.getRandomSeed());
+        IoTDBSinkConfig config = IoTDBSinkConfig.load(emptyMap);
+        assertNull("Host should not be set", config.getHost());
+        assertNull("Port should not be set", config.getPort());
     }
 
     /**
@@ -55,34 +62,17 @@ public class RandomConnectorConfigTest {
     @Test
     public void testLoadPropertyMap() throws IOException {
         Map<String, Object> properties = new HashMap<>();
-        long seed = System.currentTimeMillis();
-        properties.put("randomSeed", seed);
-        properties.put("maxMessageSize", 2048);
-
-        RandomConnectorConfig config = RandomConnectorConfig.load(properties);
-        assertEquals("Mismatched random seed : " + config.getRandomSeed(),
-            seed, config.getRandomSeed().longValue());
-        assertEquals("Mismatched MaxMessageSize : " + config.getMaxMessageSize(),
-            2048, config.getMaxMessageSize().intValue());
-    }
-
-    /**
-     * Test Case: load the configuration from a string property map.
-     *
-     * @throws IOException when failed to load the property map
-     */
-    @Test
-    public void testLoadStringPropertyMap() throws IOException {
-        Map<String, Object> properties = new HashMap<>();
-        long seed = System.currentTimeMillis();
-        properties.put("randomSeed", "" + seed);
-        properties.put("maxMessageSize", "2048");
-
-        RandomConnectorConfig config = RandomConnectorConfig.load(properties);
-        assertEquals("Mismatched random seed : " + config.getRandomSeed(),
-            seed, config.getRandomSeed().longValue());
-        assertEquals("Mismatched MaxMessageSize : " + config.getMaxMessageSize(),
-            2048, config.getMaxMessageSize().intValue());
+        List<IoTDBSinkConfig.TimeseriesOption> timeseriesOptionList = Lists.newArrayList();
+        timeseriesOptionList.add(new IoTDBSinkConfig.TimeseriesOption(
+                "root.testsg.testd.tests", TSDataType.DOUBLE, TSEncoding.GORILLA, CompressionType.SNAPPY)
+        );
+        properties.put("timeseriesOptionList", timeseriesOptionList);
+        properties.put("batchSize", 2048);
+        IoTDBSinkConfig config = IoTDBSinkConfig.load(properties);
+        assertEquals("Mismatched MaxMessageSize : " + config.getBatchSize(),
+                2048, config.getBatchSize().intValue());
+        assertEquals("Mismatched Path" + config.getTimeseriesOptionList().get(0).getPath(),
+                "root.testsg.testd.tests", config.getTimeseriesOptionList().get(0).getPath());
     }
 
     /**
@@ -93,10 +83,10 @@ public class RandomConnectorConfigTest {
     @Test(expected = JsonProcessingException.class)
     public void testLoadInvalidPropertyMap() throws IOException {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("randomSeed", "invalid-seed");
-        properties.put("maxMessageSize", "invalid-max-message-size");
+        properties.put("port", "abcd");
+        properties.put("batchSize", -200);
 
-        RandomConnectorConfig.load(properties);
+        IoTDBSinkConfig.load(properties);
     }
 
     /**
@@ -105,15 +95,25 @@ public class RandomConnectorConfigTest {
     @Test
     public void testValidConfiguration() throws IOException {
         Map<String, Object> emptyMap = Collections.emptyMap();
-        RandomConnectorConfig config = RandomConnectorConfig.load(emptyMap);
-        assertNull("RandomSeed should not be set", config.getRandomSeed());
-        assertNull("MaxMessageSize should not be set", config.getRandomSeed());
+        IoTDBSinkConfig config = IoTDBSinkConfig.load(emptyMap);
+        assertNull("host should not be set", config.getHost());
+        assertNull("port should not be set", config.getPort());
         try {
             config.validate();
-            fail("Should fail if `maxMessageSize is not provided");
         } catch (NullPointerException npe) {
             // expected
         }
     }
 
+    /**
+     * Test Case: validate the configuration.
+     */
+    @Test
+    public void testYamlConfiguration() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource("sinkConfig.yaml").getFile());
+        String path = file.getAbsolutePath();
+        IoTDBSinkConfig config = IoTDBSinkConfig.load(path);
+        assertEquals(config.getHost(), "127.0.0.1");
+    }
 }
