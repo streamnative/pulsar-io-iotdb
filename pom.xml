@@ -47,7 +47,7 @@
     <!-- connector dependencies -->
     <jackson.version>2.9.10.7</jackson.version>
     <lombok.version>1.16.22</lombok.version>
-    <pulsar.version>2.2.0</pulsar.version>
+    <pulsar.version>2.7.5</pulsar.version>
     <iotdb.version>0.12.0</iotdb.version>
     <!-- test dependencies -->
     <junit.version>4.13.1</junit.version>
